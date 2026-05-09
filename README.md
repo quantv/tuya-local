@@ -1,9 +1,10 @@
-![logo](custom_components/tuya_local/brand/icon.svg) 
+![logo](custom_components/tuya_local/brand/icon.svg)
 
-Please report any [issues](https://github.com/make-all/tuya-local/issues) and feel free to raise [pull requests](https://github.com/make-all/tuya-local/pulls).
-[Many others](https://github.com/make-all/tuya-local/blob/main/ACKNOWLEDGEMENTS.md) have contributed their help already.
+A fork of [tuya-local](https://github.com/make-all/tuya-local)
 
-[![BuyMeCoffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/jasonrumney)
+I downgrade some feature to make it works on HASS 2024.04 with python3.12
+
+Poor me!
 
 This is a Home Assistant integration to support devices running Tuya
 firmware without going via the Tuya cloud.  Devices are supported
@@ -270,7 +271,8 @@ Tuya IR and RF blasters are exposed as remote entities and support learning and
 sending commands via the standard Home Assistant remote services.
 
 ### Learning commands
-
+
+
 Use the `remote.learn_command` service with:
 - `command`: the name to store the command under (e.g. `power`)
 - `device`: a name for the appliance being controlled (e.g. `TV`)

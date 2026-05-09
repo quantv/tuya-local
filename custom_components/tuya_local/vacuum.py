@@ -8,8 +8,13 @@ from homeassistant.components.vacuum import (
     SERVICE_CLEAN_SPOT,
     SERVICE_RETURN_TO_BASE,
     SERVICE_STOP,
+    STATE_CLEANING,
+    STATE_DOCKED,
+    STATE_ERROR,
+    STATE_IDLE,
+    STATE_PAUSED,
+    STATE_RETURNING,
     StateVacuumEntity,
-    VacuumActivity,
     VacuumEntityFeature,
 )
 
@@ -97,25 +102,25 @@ class TuyaLocalVacuum(TuyaLocalEntity, StateVacuumEntity):
         return self._status_dps.get_value(self._device)
 
     @property
-    def activity(self):
+    def state(self):
         """Return the state of the vacuum cleaner."""
         status = self.status
         if self._error_dps and self._error_dps.get_value(self._device):
-            return VacuumActivity.ERROR
+            return STATE_ERROR
         elif status in [SERVICE_RETURN_TO_BASE, "returning"]:
-            return VacuumActivity.RETURNING
+            return STATE_RETURNING
         elif status in ["standby", "sleep"]:
-            return VacuumActivity.IDLE
+            return STATE_IDLE
         elif status == "paused":
-            return VacuumActivity.PAUSED
+            return STATE_PAUSED
         elif status in ["charging", "charged", "docked"]:
-            return VacuumActivity.DOCKED
+            return STATE_DOCKED
         elif self._power_dps and self._power_dps.get_value(self._device) is False:
-            return VacuumActivity.IDLE
+            return STATE_IDLE
         elif self._activate_dps and self._activate_dps.get_value(self._device) is False:
-            return VacuumActivity.PAUSED
+            return STATE_PAUSED
         else:
-            return VacuumActivity.CLEANING
+            return STATE_CLEANING
 
     async def async_turn_on(self, **kwargs):
         """Turn on the vacuum cleaner."""

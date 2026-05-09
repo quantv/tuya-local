@@ -5,7 +5,7 @@ Setup for different kinds of Tuya lock devices
 import logging
 from base64 import b64encode
 
-from homeassistant.components.lock import LockEntity, LockEntityFeature
+from homeassistant.components.lock import LockEntity
 
 from .device import TuyaLocalDevice
 from .entity import TuyaLocalEntity
@@ -92,8 +92,6 @@ class TuyaLocalLock(TuyaLocalEntity, LockEntity):
         self._approve_intercom_dp = dps_map.pop("approve_intercom", None)
         self._jam_dp = dps_map.pop("jammed", None)
         self._init_end(dps_map)
-        if self._open_dp and not self._open_dp.readonly:
-            self._attr_supported_features = LockEntityFeature.OPEN
 
     @property
     def is_locked(self):
@@ -125,11 +123,6 @@ class TuyaLocalLock(TuyaLocalEntity, LockEntity):
                     elif lock is None:
                         lock = True
         return lock
-
-    @property
-    def is_open(self):
-        if self._open_dp:
-            return self._open_dp.get_value(self._device)
 
     @property
     def is_jammed(self):
@@ -223,12 +216,6 @@ class TuyaLocalLock(TuyaLocalEntity, LockEntity):
             await self._approve_intercom_dp.async_set_value(self._device, True)
         else:
             raise NotImplementedError()
-
-    async def async_open(self, **kwargs):
-        """Open the door latch."""
-        if self._open_dp:
-            _LOGGER.info("%s opening", self._config.config_id)
-            await self._open_dp.async_set_value(self._device, True)
 
     def build_code_unlock_msg(self, action, member_id, code, source=CODE_SRC_UNKNOWN):
         """Generate the unlock code message."""

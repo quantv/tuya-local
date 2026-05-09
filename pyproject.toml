@@ -6,7 +6,7 @@ build-backend = "uv_build"
 name = "tuya-local"
 description = "A Home Assistant integration for local control of Tuya devices."
 version = "0.0.0"
-requires-python = ">=3.14.2"
+requires-python = ">=3.12"
 dependencies = [
   "tinytuya~=1.18.0",
   "tuya-device-sharing-sdk~=0.2.4"
@@ -28,7 +28,6 @@ entities = "util.entities:main"
 [dependency-groups]
 dev = [
   "fuzzywuzzy",
-  "infrared-protocols~=2.0",
   "levenshtein",
   "PyTurboJPEG~=1.8.0",
   "pytest-homeassistant-custom-component==0.13.329",
@@ -44,7 +43,7 @@ dev = [
 asyncio_mode = "auto"
 
 [tool.ruff]
-target-version = "py314"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = [

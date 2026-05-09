@@ -8,8 +8,14 @@ from homeassistant.components.alarm_control_panel import AlarmControlPanelEntity
 from homeassistant.components.alarm_control_panel.const import (
     AlarmControlPanelEntityFeature as Feature,
 )
-from homeassistant.components.alarm_control_panel.const import (
-    AlarmControlPanelState,
+from homeassistant.const import (
+    STATE_ALARM_ARMED_AWAY,
+    STATE_ALARM_ARMED_CUSTOM_BYPASS,
+    STATE_ALARM_ARMED_HOME,
+    STATE_ALARM_ARMED_NIGHT,
+    STATE_ALARM_ARMED_VACATION,
+    STATE_ALARM_DISARMED,
+    STATE_ALARM_TRIGGERED,
 )
 
 from .device import TuyaLocalDevice
@@ -51,30 +57,28 @@ class TuyaLocalAlarmControlPanel(TuyaLocalEntity, AlarmControlPanelEntity):
             raise AttributeError(f"{config.config_id} is missing an alarm_state dp")
 
         alarm_states = self._alarm_state_dp.values(device)
-        if AlarmControlPanelState.ARMED_HOME in alarm_states:
+        if STATE_ALARM_ARMED_HOME in alarm_states:
             self._attr_supported_features |= Feature.ARM_HOME
-        if AlarmControlPanelState.ARMED_AWAY in alarm_states:
+        if STATE_ALARM_ARMED_AWAY in alarm_states:
             self._attr_supported_features |= Feature.ARM_AWAY
-        if AlarmControlPanelState.ARMED_NIGHT in alarm_states:
+        if STATE_ALARM_ARMED_NIGHT in alarm_states:
             self._attr_supported_features |= Feature.ARM_NIGHT
-        if AlarmControlPanelState.ARMED_VACATION in alarm_states:
+        if STATE_ALARM_ARMED_VACATION in alarm_states:
             self._attr_supported_features |= Feature.ARM_VACATION
-        if AlarmControlPanelState.ARMED_CUSTOM_BYPASS in alarm_states:
+        if STATE_ALARM_ARMED_CUSTOM_BYPASS in alarm_states:
             self._attr_supported_features |= Feature.ARM_CUSTOM_BYPASS
-        if self._trigger_dp or AlarmControlPanelState.TRIGGERED in alarm_states:
+        if self._trigger_dp or STATE_ALARM_TRIGGERED in alarm_states:
             self._attr_supported_features |= Feature.TRIGGER
         # Code support not implemented
         self._attr_code_format = None
         self._attr_code_arm_required = False
 
     @property
-    def alarm_state(self):
+    def state(self):
         """Return the current alarm state."""
         if self._trigger_dp and self._trigger_dp.get_value(self._device):
-            return AlarmControlPanelState.TRIGGERED
-        return AlarmControlPanelState(
-            self._alarm_state_dp.get_value(self._device),
-        )
+            return STATE_ALARM_TRIGGERED
+        return self._alarm_state_dp.get_value(self._device)
 
     async def _alarm_send_command(self, cmd: str):
         _LOGGER.info("%s setting alarm state to %s", self._config.config_id, cmd)
@@ -85,29 +89,29 @@ class TuyaLocalAlarmControlPanel(TuyaLocalEntity, AlarmControlPanelEntity):
 
     async def async_alarm_disarm(self, code=None):
         """Send disarm command"""
-        await self._alarm_send_command(AlarmControlPanelState.DISARMED)
+        await self._alarm_send_command(STATE_ALARM_DISARMED)
 
     async def async_alarm_arm_home(self, code=None):
-        await self._alarm_send_command(AlarmControlPanelState.ARMED_HOME)
+        await self._alarm_send_command(STATE_ALARM_ARMED_HOME)
 
     async def async_alarm_arm_away(self, code=None):
         """Send away command"""
-        await self._alarm_send_command(AlarmControlPanelState.ARMED_AWAY)
+        await self._alarm_send_command(STATE_ALARM_ARMED_AWAY)
 
     async def async_alarm_arm_night(self, code=None):
         """Send away command"""
-        await self._alarm_send_command(AlarmControlPanelState.ARMED_NIGHT)
+        await self._alarm_send_command(STATE_ALARM_ARMED_NIGHT)
 
     async def async_alarm_arm_vacation(self, code=None):
         """Send away command"""
-        await self._alarm_send_command(AlarmControlPanelState.ARMED_VACATION)
+        await self._alarm_send_command(STATE_ALARM_ARMED_VACATION)
 
     async def async_alarm_arm_custom_bypass(self, code=None):
-        await self._alarm_send_command(AlarmControlPanelState.ARMED_CUSTOM_BYPASS)
+        await self._alarm_send_command(STATE_ALARM_ARMED_CUSTOM_BYPASS)
 
     async def async_alarm_trigger(self, code=None):
         if self._trigger_dp:
             _LOGGER.info("%s triggering alarm", self._config.config_id)
             await self._trigger_dp.async_set_value(self._device, True)
         else:
-            await self._alarm_send_command(AlarmControlPanelState.TRIGGERED)
+            await self._alarm_send_command(STATE_ALARM_TRIGGERED)

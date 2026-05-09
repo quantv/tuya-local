@@ -68,8 +68,6 @@ class TuyaLocalWaterHeater(TuyaLocalEntity, WaterHeaterEntity):
 
         if self._operation_mode_dps:
             self._support_flags |= WaterHeaterEntityFeature.OPERATION_MODE
-            if self._operation_mode_dps.type is bool:
-                self._support_flags |= WaterHeaterEntityFeature.ON_OFF
             if "away" in self._operation_mode_dps.values(device):
                 self._support_flags |= WaterHeaterEntityFeature.AWAY_MODE
         if self._temperature_dps and not self._temperature_dps.readonly:
