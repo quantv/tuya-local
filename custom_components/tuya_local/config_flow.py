@@ -567,13 +567,13 @@ class ConfigFlowHandler(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: ConfigEntry):
-        return OptionsFlowHandler()
+        return OptionsFlowHandler(config_entry)
 
 
 class OptionsFlowHandler(OptionsFlow):
-    def __init__(self):
+    def __init__(self, config_entry: ConfigEntry):
         """Initialize options flow."""
-        pass
+        self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
         return await self.async_step_user(user_input)
